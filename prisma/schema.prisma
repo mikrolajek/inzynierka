@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int         @id @default(autoincrement())
+  email        String      @unique
+  name         String?
+  posts        Post[]
+  obecny       Boolean     @default(false)
+  stanowisko   Stanowisko? @relation(fields: [stanowiskoId], references: [id])
+  stanowiskoId Int?        @unique
+  role         Role?       @relation(fields: [roleId], references: [id])
+  roleId       Int?
+  team         Team?       @relation(fields: [teamId], references: [id])
+  teamId       Int?
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  viewCount Int      @default(0)
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorId  Int?
+}
+
+model Stanowisko {
+  id     Int    @id @default(autoincrement())
+  name   String
+  user   User[]
+  userId Int?   @unique
+}
+
+model Role {
+  id     Int    @id @default(autoincrement())
+  name   String
+  user   User[]
+  userId Int?
+}
+
+model Team {
+  id     Int    @id @default(autoincrement())
+  name   String
+  user   User[]
+  userId Int?
+}
